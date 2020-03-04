@@ -1,0 +1,13 @@
+slides > slide.backdrop {
+  background: none !important;
+  background-color: white !important;
+}
+
+slides > slide.title-slide{
+	background-image: url("corona.jpg");
+  	background-repeat: no-repeat;
+  	background-attachment: fixed;
+	background-position: 75% 22.5%;
+	background-size: 33%;
+}
+
