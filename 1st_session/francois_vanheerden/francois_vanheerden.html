@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>satRday2020</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Francois van Heerden, March 2020" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css\sfah2.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+layout: true
+
+&lt;style&gt;
+.remark-slide-number {
+  position: inherit;
+}
+.remark-slide-number .progress-bar-container {
+  position: absolute;
+  bottom: 0;
+  height: 4px;
+  display: block;
+  left: 0;
+  right: 0;
+}
+
+.remark-slide-number .progress-bar {
+  height: 100%;
+  background-color: black;
+}
+&lt;/style&gt;
+
+
+
+---
+name: colour-title
+class: center, middle, inverse
+background-image: url(img/wallpaper_vib_dark.png)
+background-size: cover
+
+# satRday2020 
+
+## The magic of colour: the pursuit to derive several hundred unique palettes
+
+### Francois van Heerden, March 2020
+
+---
+name: colour-kantar
+class: bottom, inverse
+background-image: url(img/KantarAnalyticsPractice.png)
+background-size: cover
+
+---
+layout: false
+
+# 1.1 Introduction: What the colour?
+
+--
+• Our final outputs from R will often take on the form of a graph, map, infographic some other relevant visualisation.  
+
+
+--
+• These visualisations  require some creativity.  
+
+
+--
+• The right type of data, chart type, and colour are all requirements in order to maximise the visual appeal and emphasise the information being conveyed.  
+
+
+--
+• The right palette can enhance the visual and lead to a far better audience engagement, as well as having it perceived as more usable and intuitive. [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt; #TidyTuesday](https://twitter.com/hashtag/tidytuesday?lang=en) comes to mind.   
+
+
+--
+• This is an often overlooked part of what we do.  
+
+---
+# 1.2 Introduction: The ugly chart 
+
+•  We all have seen this: 
+
+```r
+par(bg = "lightyellow")
+bar &lt;- c(4, 5, 3, 1)
+line &lt;- bar / 2
+bp &lt;- barplot(bar)
+lines(line, col = "red")
+lines(bp, line, col = "blue")
+```
+
+&lt;img src="francois_vanheerden_files/figure-html/uglychart-1.svg" width="504" style="display: block; margin: auto;" /&gt;
+
+---
+# 1.3 Introduction: The good
+(The grants received are the darker colours while the grants requested are the lighter colours. The grant  success rates are expressed as % above the bars.)  
+&lt;img src="francois_vanheerden_files/figure-html/unnamed-chunk-1-1.png" width="504" style="display: block; margin: auto;" /&gt;
+Source: [Data Visualisation with R](https://www.springer.com/gp/book/9783030284435)
+
+---
+# 1.4 So what? Select the right colours and be done with it.
+
+--
+
+• Choosing pleasing colours might come across as intuitive, but it does not do away with the complexity of understanding colour, format types, and big colouring tasks.  
+
+--
+
+• How will you create many unique palettes for use? A package? Randomly? Painfully by hand?  
+
+--
+
+
+• For my personal project, I had to derive about **&lt;span style='color: #FF0000;'&gt;200&amp;nbsp;col&lt;/span&gt;&lt;span style='color: #00FF00;'&gt;our&amp;nbsp;pa&lt;/span&gt;&lt;span style='color: #0000FF;'&gt;lettes&lt;/span&gt;** that would be sufficiently unique and different enough from each other.   
+
+
+--
+
+• Most packages do not come close to this requirement unless you opt for some sort of random set.  
+
+--
+
+• I thought it would be simple enough to gather training data, upload, and draw some palettes and that's exactly what I did...sort of.     
+
+---
+# 1.5 Source of data
+
+--
+
+• I decided that country flags would actually act as a good input data for palettes given the rich colours that they have and that I was going to colour in main cities across the world.    
+
+
+--
+
+.pull-left[
+**Case in point:**
+&lt;img src="img/satRday2020.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+**Small sample:**
+&lt;img src="img/2020301_SA_300dpi_5_inch_sqrcy_label.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+  
+• In addition, I knew this was something likely already collected and probably saved at a reasonable resolution.  
+
+• [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt; - Twitter has been a life saver](https://twitter.com/_______Francois/status/1216437679744802817)  
+
+• I used [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; shinyflags](https://github.com/Tutuchan/shinyflags) by Pierre Formont. These flags are originally from [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; flag-icon-css](https://github.com/lipis/flag-icon-css)  
+
+---
+# 1.6 The actual data 
+
+--
+
+• `shinyflags` - I had 256 flags. These varied from well-known countries to small islands.  
+
+--
+
+• These flags have been saved in .svg ***(Scalable Vector Graphics)***. SVG uses **shapes, numbers and coordinates rather than a pixel grid** to render graphics in the browser. SVG is thus not really "static" which makes it resolution independent and infinitely scalable. It is perfect for web application but not so great for our purpose.  
+
+• I converted these into normal .jpg files for use. The resulting images were **640 width x 480 height =  307 200 pixels each**:   
+
+&lt;img src="francois_vanheerden_files/figure-html/agflagprior-1.png" width="504" style="display: block; margin: auto;" /&gt;
+  
+---
+
+# 1.7 Decomposing the image
+
+--
+
+.pull-left[
+• When we work with colour, we are essentially working with an array object. We have a "cube" of data to work with for each pixel.  
+
+&lt;img src="francois_vanheerden_files/figure-html/rgbcolourspace-1.png" width="504" /&gt;
+• We have **16 777 216** possible combinations (256 to the power of 3) in sRBG.  
+]
+
+--
+  
+.pull-right[
+
+• Thus, we can imagine to represent our image as follow:  
+&lt;img src="francois_vanheerden_files/figure-html/array-1.png" width="504" /&gt;
+]  
+  
+---
+name: colournoise
+class: center, middle
+background-size: cover
+background-image: url(img/wallpaper_vib_dark_trans.png)
+
+# 2. Libraries - What is available? 
+
+---
+# 2.1. What exists and how are they creating a palette? 
+
+• There are several packages available for this task.  
+
+• I worked with `paletter` as it seemed to do most closely what I required.  
+
+• Another package available for the task was `imgpalr`. It still made use of k-means to find the k number of colours to extract.  
+
+• There is one other package that was also interesting which we will discuss at the end.  
+
+---
+# 2.2 How are they doing it? 
+
+The main idea behind `paletteR` code is quite simple:
+
+--
+.pull-left[
+  → specify a picture  
+
+   → convert into a three-dimensional &lt;span style='color: #FF0000;'&gt;R&lt;/span&gt;&lt;span style='color: #00FF00;'&gt;G&lt;/span&gt;&lt;span style='color: #0000FF;'&gt;B&lt;/span&gt; matrix  
+
+  → apply k-means algorithm on it and draw a sample of representative colours      
+  
+  → move to &lt;span style='color: #FFAF00;'&gt;HS&lt;/span&gt;&lt;span style='color: #AF00FF;'&gt;V&lt;/span&gt; colour space  
+
+  → remove too bright and too dark colours leveraging &lt;span style='color: #FFAF00;'&gt;HS&lt;/span&gt;&lt;span style='color: #AF00FF;'&gt;V&lt;/span&gt; colour system properties  
+
+  → further sample colours to select the most “distant” ones.  
+  
+]
+--
+.pull-right[
+&lt;img src="francois_vanheerden_files/figure-html/hsv-1.png" width="504" /&gt;
+]
+
+      
+    
+Source: [Andrea Cirillo](https://datascienceplus.com/how-to-use-paletter-to-automagically-build-palettes-from-pictures/)
+
+
+---
+layout: false
+name: conclusion
+class: middle, inverse
+
+# 2.3.1 Explaining K-means
+
+--
+
+• K-means is a clustering technique that is typically considered to be part of unsupervised learning methods.   
+
+--
+
+• Clustering algorithms help us with identifying subgroups or differing clusters that are underlying our data.  
+
+--
+
+• K-means tries to partition the data into k number of clusters that are distinct and non-overlapping. Each data point can only be part of a single cluster.  
+
+--
+
+• In order to find a best solution, K-means tries to accomplish two tasks simultaneously:
+
+--
+
+  - Maximise the distance between clusters as far as possible.  
+  - Minimise the distance between the points within the cluster (i.e. distance between inter-cluster data points)   
+
+--
+
+• Since it needs to find a best solution, it goes through several iterations before either converging to a solution or reaching its maximum iteration count.  
+
+--
+
+• Unfortunately, K-means cannot always guarantee to find the best solution. There is also the possibility of multiple good solutions existing within the data. 
+
+---
+# 2.3.2 Illustrating K-means  
+  
+.pull-left[
+**In short:**  
+1 - We specify the number of clusters to partition into. Let's say 3.  
+
+2 - We randomly select 3 data points to act as our initial centroids (sometimes called initialisation).
+
+3 - We compute the sum of the squared distance between data points and the centroids.  
+
+4 - Each data point is assigned to the closest centroid.  
+
+5 - We compute the new centroids for the clusters by taking the average of all data points that belong to each cluster.  
+
+6 - We keep repeating the previous steps (3-5) until there is no change in the centroid (i.e convergence or max iteration count has been reached).
+
+Source: [simplystatistics.org](https://simplystatistics.org/2014/02/18/k-means-clustering-in-a-gif/)
+]
+
+--
+.pull-right[
+&lt;img src="img/K-means_convergence.gif" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# 2.4 Code for paletter::create_palette()
+
+
+```r
+create_palette &lt;- function(image_path = NA, number_of_colors = 40, type_of_variable = NA,
+         filter_on_low_brightness = TRUE, filter_on_high_brightness = TRUE,
+         optimize_palette = TRUE, filter_on_saturation = TRUE) { 
+  if (is.na(image_path)) {
+    stop("you must provide a jpg image to create your palette from")
+  } 
+  if (is.na(type_of_variable)) {
+    stop("you must specify a valid type_of_variable argument to create the palette")
+  }
+  message("decomposing image into RGB...") 
+* painting &lt;- readJPEG(image_path)
+  dimension &lt;- dim(painting)
+* effective_n_of_color &lt;- number_of_colors * 100
+* painting_rgb &lt;- data.frame(
+*   x = rep(1:dimension[2], each = dimension[1]),
+*   y = rep(dimension[1]:1, dimension[2]),
+*   R = as.vector(painting[, , 1]),
+*   G = as.vector(painting[, , 2]),
+*   B = as.vector(painting[, , 3])
+  ) 
+```
+
+---
+
+
+```r
+*if (optimize_palette == TRUE) {
+    message("applying kmeans to the image...")
+    k_means &lt;- kmeans(painting_rgb[, c("R", "G","B")], 
+                      centers = effective_n_of_color, iter.max = 30)
+    rgb_raw_palette &lt;- k_means$centers
+    message("optimising palette...")
+    final_palette &lt;- optimize_palette(rgb_raw_palette, number_of_colors,
+      type_of_variable = type_of_variable, effective_n_of_color,
+      filter_on_low_brightness = filter_on_low_brightness,
+      filter_on_high_brightness = filter_on_high_brightness,
+      filter_on_saturation = filter_on_saturation
+    )
+  }
+* else {
+    message("applying kmeans to the image...")
+*   k_means &lt;- kmeans(painting_rgb[, c("R", "G", "B")],
+*     centers = number_of_colors, iter.max = 30
+    )
+*   rgb_raw_palette &lt;- k_means$centers
+*   final_palette &lt;- rgb(k_means$centers)
+  }
+* show_col(final_palette)
+  return(final_palette)
+```
+
+(If you want to look at all the code you need to look at the code behind `paletter::optimize_palette()` too.)
+  
+---
+
+name: colournoise
+class: center, middle
+background-size: cover
+background-image: url(img/wallpaper_vib_dark_trans.png)
+
+# 3. Getting into the examples
+
+---
+# 3.1 Our example flag
+
+.pull-left[
+• As an example we will be making use of **Antigua and Barbuda**'s flag.    
+
+• This flag is ideal as it has multiple colours that are quite different from each other. There is also some interesting intersections and line partitions on the flag.    
+
+• Flags are also ideal as input data given they already have their most important features known.
+
+• Given the flag it would seem like a simple exercise. However, when we run k-means several times something becomes increasingly clear:
+]
+
+.pull-right[
+&lt;img src="francois_vanheerden_files/figure-html/AGflag-1.png" width="504" /&gt;
+]
+
+
+
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_1_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_2_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_3_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_4_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_5_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_6_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_7_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_8_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_9_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_10_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_11_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_12_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_13_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_14_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_15_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_16_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_17_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_18_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_19_output-1.png" width="504" /&gt;
+]]
+---
+class: split-40
+count: false
+.column[.content[
+
+```r
+  output_list &lt;- create_palette(  
+    image_path =  
+    here::here("img","ag.jpeg"),  
+    type_of_variable = "categorical",  
+    number_of_colors = 5,  
+    filter_on_low_brightness = FALSE,  
+    filter_on_high_brightness = FALSE,  
+    filter_on_saturation = FALSE,  
+    optimize_palette = FALSE)  
+  output_list %&gt;% t() %&gt;% show_col()  
+```
+]]
+.column[.content[
+&lt;img src="francois_vanheerden_files/figure-html/kmeansill_20_20_output-1.png" width="504" /&gt;
+]]
+
+---
+# 3.2 Fewer solutions...more problems
+Essentially we have two problems:  
+
+* **Not the same 5 colours are getting extracted each time.** This means that we have other colours within the image but also that multiple competing solutions exist. Our top colours should always be most representative of what is found within the flag.  
+
+* **K-means is still dependent on us for the right number of colours.** We will have to determine some sort of a cut off criteria with our solution in order to have the right number of colours extracted. Within K-means this is often done by using either the elbow method or silhouette method.  
+                        
+**The main problem with k-means is its dependency on the initially chosen centroids. The centroids could end up in splitting common data points whilst other, separated points get grouped together if some of the centroids are more attracted to outliers.** 
+
+---
+name: colourhex
+class: center, middle
+background-size: cover
+background-image: url(img/wallpaper_vib_dark_trans.png)
+# 4. Improving!
+
+---
+# 4.1 Improving the create_palette function - 3 areas
+There is likely **three** areas that we can improve on:  
+
+--
+
+• The file format we use as default.    
+
+
+```r
+painting &lt;- readJPEG(image_path)
+*painting &lt;- png::readPNG(image_path)
+```
+
+--
+
+• Adjusting the iteration count to search slightly longer for an ideal solution.
+
+
+```r
+  k_means &lt;- kmeans(painting_rgb[, c("R", "G", "B")],
+      centers = number_of_colors, iter.max = 30
+*     centers = number_of_colors, iter.max = 100
+    )
+```
+
+--
+
+• Stacking multiple k-mean runs and aggregating the solutions to get a better solution.   
+  
+---
+# 4.2.1 File format - some are more equal than others?
+Some file formats have compression.
+
+--
+.pull-left[
+• .jpeg (.jpg) - **Joint Photographic Experts Group** is a way of saving images with some degree of compression. JPEG typically achieves 10:1 compression with little perceptible loss in image quality. Still the default for most people.   
+
+• .png - **Portable Network Graphics - has no compression** (often called lossless data compression).  
+]
+
+--
+
+.pull-right[
+Decomposing the **.jpg** version of the flag in all its pixels:  
+• `\(\color{red}{\text{3070 : colours extracted}}\)`   
+• `\(\color{red}{\text{mean: 100 pixels (on average per colour) }}\)`   
+  
+Decomposing the **.png** version of the flag in all its pixels:  
+• `\(\color{green}{\text{887 : colours extracted}}\)`   
+• `\(\color{green}{\text{mean: 346.336 pixels (on average per colour)}}\)`  
+
+]
+
+---
+class: middle, center
+# 4.2.2 Upping iteration count to find a potentially better solution?
+• Currently we are defaulting to a max iteration count of 30.  
+
+--
+
+What if we...  
+
+--
+~~go to 50?~~   
+  
+--
+~~go to 100?~~    
+  
+--
+~~go to 1000?~~  
+
+--
+
+• Multiple good solutions exist unfortunately and this will not guarantee it. 
+
+---
+# 4.2.3 Multiple k-means - effective strategy?
+.pull-left[
+• On those initial runs it seemed that our most prevalent colours would occur a sufficient number of times across. Would this solve the problem?
+
+• Most consider this a common approach to perform multiple clusterings with different startings positions and then considering the clustering which occured most often as the "correct" outcome. 
+
+• I was able to make this work but it required running quite a lot of clustering solutions. The run time was growing quite heavily when you're repeating 30 k-means per flag.  
+]
+
+--
+
+.pull-right[
+Just out of interest, **K-means++**:
+
+• Even though a host of other techniques exist, K-means++ has been proposed as an enhancement over the standard k-means algorithm. David Arthur and Sergei Vassilvitskii proposed it in 2007 and this method has been shown to provide far better clusterings over the standard k-means algorithm.
+
+•The first cluster center is chosen uniformly at random from the data points that are being clustered, after which each subsequent cluster center is chosen from the remaining data points with probability proportional to its squared distance from the point's closest existing cluster center
+]
+
+---
+# 4.3 Rethinking the problem...
+• Surely it should be easy enough to extract colours more easily than this? 
+
+• What would be an easier way?  
+
+---
+name: colourhex
+class: center, middle
+background-size: cover
+background-image: url(img/wallpaper_vib_dark_trans.png)
+# 5. Alternative implementations?
+
+
+---
+# 5.1 What if we would sample from the flag? Boring right...?
+
+• The flag is after all a "complete" population.  
+
+• We should be able to draw a sample that is representative enough of all colour areas on a flag.    
+• There are some flags within flags that makes this slightly more complex as you can seen below:
+
+&lt;img src="img/tv.png" width="284" style="display: block; margin: auto;" /&gt;
+
+• However, this is still in fact part of the actual flag. 
+
+
+
+---
+
+count: false
+
+```r
+* #Reading in the .png
+*painting &lt;- png::readPNG(here::here("img", "ag.png"))
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+* #Determing the dimensions
+*dimension &lt;- dim(painting)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+* #Creating the dataframe
+*painting_rgb &lt;- data.frame(
+* x = rep(1:dimension[2], each = dimension[1]),
+* y = rep(dimension[1]:1, dimension[2]),
+* R = as.vector(painting[, , 1]),
+* G = as.vector(painting[, , 2]),
+* B = as.vector(painting[, , 3])
+*) 
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+* #Sampling only 10% of the photo n = 30 720 pixels
+*output &lt;- painting_rgb
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+* sample_frac(.10)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+* select(R, G, B)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+* #Returns a single column containg all the pixels looked up
+*rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+* #Providing appropriate colour name
+*names(rgb_hex_ouput) &lt;- c("hex_colour")
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+* #Performing a basic group by with summarise and arrnage for the colours
+*rgb_hex_ouput_test &lt;- rgb_hex_ouput
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+* group_by(hex_colour)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+  group_by(hex_colour) %&gt;%  
+* summarise(ncount = n())
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+  group_by(hex_colour) %&gt;%  
+  summarise(ncount = n()) %&gt;%  
+* arrange(desc(ncount))
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+  group_by(hex_colour) %&gt;%  
+  summarise(ncount = n()) %&gt;%  
+  arrange(desc(ncount))  
+* #Adding additional column for ggplot
+*rgb_hex_ouput_test &lt;- rgb_hex_ouput_test %&gt;% mutate(colourss = hex_colour)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+  group_by(hex_colour) %&gt;%  
+  summarise(ncount = n()) %&gt;%  
+  arrange(desc(ncount))  
+  #Adding additional column for ggplot
+rgb_hex_ouput_test &lt;- rgb_hex_ouput_test %&gt;% mutate(colourss = hex_colour)  
+*#Taking out colours that occured less than a 100 times (less than 0.36% of total sampled)  #Taking out colours that occured less than a 100 times (less than 0.36% of total sampled)
+```
+---
+count: false
+
+```r
+  #Reading in the .png
+painting &lt;- png::readPNG(here::here("img", "ag.png"))  
+  #Determing the dimensions
+dimension &lt;- dim(painting)  
+  #Creating the dataframe
+painting_rgb &lt;- data.frame(  
+  x = rep(1:dimension[2], each = dimension[1]),  
+  y = rep(dimension[1]:1, dimension[2]),  
+  R = as.vector(painting[, , 1]),  
+  G = as.vector(painting[, , 2]),  
+  B = as.vector(painting[, , 3])  
+)  
+  #Sampling only 10% of the photo n = 30 720 pixels
+output &lt;- painting_rgb %&gt;%  
+  sample_frac(.10) %&gt;%  
+  select(R, G, B)  
+  #Returns a single column containg all the pixels looked up
+rgb_hex_ouput &lt;- rgb(output) %&gt;% as.data.frame()  
+  #Providing appropriate colour name
+names(rgb_hex_ouput) &lt;- c("hex_colour")  
+  #Performing a basic group by with summarise and arrnage for the colours
+rgb_hex_ouput_test &lt;- rgb_hex_ouput %&gt;%  
+  group_by(hex_colour) %&gt;%  
+  summarise(ncount = n()) %&gt;%  
+  arrange(desc(ncount))  
+  #Adding additional column for ggplot
+rgb_hex_ouput_test &lt;- rgb_hex_ouput_test %&gt;% mutate(colourss = hex_colour)  
+#Taking out colours that occured less than a 100 times (less than 0.36% of total sampled)  #Taking out colours that occured less than a 100 times (less than 0.36% of total sampled)
+*rgb_hex_ouput_test_filtered &lt;- rgb_hex_ouput_test %&gt;% filter(ncount &gt; 100)
+```
+
+---
+name: css-theme
+
+# 5.2 Plotting the random sampling
+
+.pull-left[
+&lt;img src="francois_vanheerden_files/figure-html/unnamed-chunk-6-1.png" width="504" /&gt;
+]
+.pull-right[
+&lt;img src="francois_vanheerden_files/figure-html/unnamed-chunk-7-1.png" width="504" /&gt;
+]
+
+---
+# 5.3.1 Cut off criteria exploration (1/2)
+
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;% 
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;% 
+  mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100) 
+
+y &lt;- 0
+#repeat for the number of rows within our colour df
+  for (i in 1:nrow(outputtest)) { 
+#if our colour value is larger or equal to the mean
+    if(outputtest[i,2] &gt;= outputtest$cut_off)
+      y &lt;- y + 1
+  }
+  
+z &lt;- 0
+#include values that are larger than 4.5% of the total index that we created
+for (i in 1:nrow(outputtest)) {
+  if(outputtest[i,5] &gt;= 4.5)
+    z &lt;- z + 1
+}
+```
+
+---
+count: false
+
+```r
+*outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character)
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+* mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100))
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;%  
+* mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100)
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;%  
+  mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100)  
+*y &lt;- 0
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;%  
+  mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100)  
+y &lt;- 0  
+* #repeat for the number of rows within our colour df
+* for (i in 1:nrow(outputtest)) {
+* #if our colour value is larger or equal to the mean
+*   if(outputtest[i,2] &gt;= outputtest$cut_off)
+*     y &lt;- y + 1
+* }
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;%  
+  mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100)  
+y &lt;- 0  
+  #repeat for the number of rows within our colour df
+  for (i in 1:nrow(outputtest)) {  
+  #if our colour value is larger or equal to the mean
+    if(outputtest[i,2] &gt;= outputtest$cut_off)  
+      y &lt;- y + 1  
+  }  
+*z &lt;- 0
+```
+---
+count: false
+
+```r
+outputtest &lt;- rgb_hex_ouput_test %&gt;% mutate_if(is.factor, as.character) %&gt;%  
+  mutate(cut_off = mean(rgb_hex_ouput_test$ncount) - (mean(rgb_hex_ouput_test$ncount)*30/100)) %&gt;%  
+  mutate(pop_cut_off = rgb_hex_ouput_test$ncount/max(rgb_hex_ouput_test$ncount)*100)  
+y &lt;- 0  
+  #repeat for the number of rows within our colour df
+  for (i in 1:nrow(outputtest)) {  
+  #if our colour value is larger or equal to the mean
+    if(outputtest[i,2] &gt;= outputtest$cut_off)  
+      y &lt;- y + 1  
+  }  
+z &lt;- 0  
+* #include values that are larger than 4.5% of the total index that we created
+*for (i in 1:nrow(outputtest)) {
+* if(outputtest[i,5] &gt;= 4.5)
+*   z &lt;- z + 1
+*} 
+```
+
+---
+# 5.3.2 Cut off criteria exploration (2/2)
+
+```r
+aa &lt;- 0
+ab &lt;- 0
+
+for(i in 1:nrow(outputtest)) {
+#aa is added to ncount   
+  aa &lt;- outputtest[i,2] + aa 
+#if aa divided by the sum of ncount is smaller or equal to 95.5 add 1 to ab
+   if ((aa/sum(outputtest[,2])*100) &lt;= 95.5) {
+    ab &lt;- ab + 1
+  } else {
+    break}
+}
+
+#If y is the same value as z return...
+if(y == z | (y == (z+1)) &amp; z &gt;= 2) {print(z)
+#if y is the same value as ab and y is larger or equal to 2 return y
+} else if (y == ab &amp; y &gt;= 2) {print(y)
+#If z is the same value as ab and z is larger or equal to 2 return z
+} else if (z == ab &amp; z &gt;= 2) {print(z)
+#If z is smaller or equal to y and z is larger than 2 return z  
+} else if (z &lt;= y &amp; z &gt;= 2) {print(z)
+#Else just return our minimum which is 2  
+} else (print(2))
+```
+
+---
+count: false
+
+```r
+*aa &lt;- 0
+```
+---
+count: false
+
+```r
+aa &lt;- 0  
+*ab &lt;- 0
+```
+---
+count: false
+
+```r
+aa &lt;- 0  
+ab &lt;- 0  
+*for(i in 1:nrow(outputtest)) {
+* #aa is added to ncount
+* aa &lt;- outputtest[i,2] + aa
+* #if aa divided by the sum of ncount is smaller or equal to 95.5 add 1 to ab
+*  if ((aa/sum(outputtest[,2])*100) &lt;= 95.5) {
+*   ab &lt;- ab + 1
+* } else {
+*   break}
+*} 
+```
+---
+count: false
+
+```r
+aa &lt;- 0  
+ab &lt;- 0  
+for(i in 1:nrow(outputtest)) {  
+  #aa is added to ncount
+  aa &lt;- outputtest[i,2] + aa  
+  #if aa divided by the sum of ncount is smaller or equal to 95.5 add 1 to ab
+   if ((aa/sum(outputtest[,2])*100) &lt;= 95.5) {  
+    ab &lt;- ab + 1  
+  } else {  
+    break}  
+}  
+* #If y is the same value as z return...
+*if(y == z | (y == (z+1)) &amp; z &gt;= 2) {print(z)
+* #if y is the same value as ab and y is larger or equal to 2 return y
+*} else if (y == ab &amp; y &gt;= 2) {print(y)
+* #If z is the same value as ab and z is larger or equal to 2 return z
+*} else if (z == ab &amp; z &gt;= 2) {print(z)
+* #If z is smaller or equal to y and z is larger than 2 return z
+*} else if (z &lt;= y &amp; z &gt;= 2) {print(z)
+* #Else just return our minimum which is 2
+*} else (print(2))
+```
+
+
+---
+class: split-five,middle, inverse  
+layout: false
+# -
+
+.column[
+&lt;img src="png/ad.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ad.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ae.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ae.png" width="128px"height="96px"&gt;  
+&lt;img src="png/af.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_af.png" width="128px"height="96px"&gt;  
+]    
+  
+.column[
+&lt;img src="png/ag.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ag.png" width="128px"height="96px"&gt;   
+&lt;img src="png/al.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_al.png" width="128px"height="96px"&gt;  
+&lt;img src="png/am.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_am.png" width="128px"height="96px"&gt;  
+]       
+
+.column[
+&lt;img src="png/ao.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ao.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ar.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ar.png" width="128px"height="96px"&gt;  
+&lt;img src="png/as.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_as.png" width="128px"height="96px"&gt;  
+]         
+
+.column[
+&lt;img src="png/au.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_au.png" width="128px"height="96px"&gt;   
+&lt;img src="png/aw.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_aw.png" width="128px"height="96px"&gt;  
+&lt;img src="png/ax.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ax.png" width="128px"height="96px"&gt;  
+]         
+      
+.column[
+&lt;img src="png/az.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_az.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ba.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ba.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bb.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bb.png" width="128px"height="96px"&gt;  
+]         
+
+---
+class: split-five,middle, inverse  
+layout: false 
+# -
+
+.column[
+&lt;img src="png/bd.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bd.png" width="128px"height="96px"&gt;   
+&lt;img src="png/be.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_be.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bf.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bf.png" width="128px"height="96px"&gt;  
+]  
+
+.column[
+&lt;img src="png/bg.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bg.png" width="128px"height="96px"&gt;   
+&lt;img src="png/bh.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bh.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bi.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bi.png" width="128px"height="96px"&gt;  
+]  
+
+.column[
+&lt;img src="png/bj.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bj.png" width="128px"height="96px"&gt;   
+&lt;img src="png/bl.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bl.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bm.png" width="128px"height="96px"&gt;  
+]  
+
+.column[
+&lt;img src="png/bn.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bn.png" width="128px"height="96px"&gt;   
+&lt;img src="png/bo.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bo.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bq.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bq.png" width="128px"height="96px"&gt;  
+]  
+
+.column[
+&lt;img src="png/br.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_br.png" width="128px"height="96px"&gt;   
+&lt;img src="png/bs.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bs.png" width="128px"height="96px"&gt;  
+&lt;img src="png/bt.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bt.png" width="128px"height="96px"&gt;  
+]  
+
+---
+class: split-five,middle, inverse  
+layout: false 
+#-
+
+.column[
+&lt;img src="png/bv.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bv.png" width="128px"height="96px"&gt;   
+&lt;img src="png/za.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_za.png" width="128px"height="96px"&gt;  
+&lt;img src="png/by.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_by.png" width="128px"height="96px"&gt;  
+] 
+
+
+.column[
+&lt;img src="png/bz.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_bz.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ca.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ca.png" width="128px"height="96px"&gt;  
+&lt;img src="png/cc.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cc.png" width="128px"height="96px"&gt;  
+] 
+
+
+.column[
+&lt;img src="png/cd.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cd.png" width="128px"height="96px"&gt;   
+&lt;img src="png/cf.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cf.png" width="128px"height="96px"&gt;  
+&lt;img src="png/cg.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cg.png" width="128px"height="96px"&gt;  
+] 
+
+
+.column[
+&lt;img src="png/ch.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ch.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ci.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ci.png" width="128px"height="96px"&gt;  
+&lt;img src="png/ck.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ck.png" width="128px"height="96px"&gt;  
+] 
+
+
+.column[
+&lt;img src="png/cl.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cl.png" width="128px"height="96px"&gt;   
+&lt;img src="png/cm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cm.png" width="128px"height="96px"&gt;  
+&lt;img src="png/cn.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cn.png" width="128px"height="96px"&gt;  
+] 
+
+
+---
+class: split-five,middle, inverse  
+layout: false 
+#-
+
+.column[
+&lt;img src="png/co.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_co.png" width="128px"height="96px"&gt;   
+&lt;img src="png/cr.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cr.png" width="128px"height="96px"&gt;  
+&lt;img src="png/cu.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cu.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/cv.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cv.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ls.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ls.png" width="128px"height="96px"&gt;  
+&lt;img src="png/cx.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cx.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/zm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_zm.png" width="128px"height="96px"&gt;   
+&lt;img src="png/cz.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_cz.png" width="128px"height="96px"&gt;  
+&lt;img src="png/de.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_de.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/dj.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_dj.png" width="128px"height="96px"&gt;   
+&lt;img src="png/dk.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_dk.png" width="128px"height="96px"&gt;  
+&lt;img src="png/dm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_dm.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/do.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_do.png" width="128px"height="96px"&gt;   
+&lt;img src="png/dz.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_dz.png" width="128px"height="96px"&gt;  
+&lt;img src="png/iq.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_iq.png" width="128px"height="96px"&gt;  
+] 
+
+---
+class: split-five,middle, inverse  
+layout: false  
+# - 
+
+.column[
+&lt;img src="png/ee.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ee.png" width="128px"height="96px"&gt;   
+&lt;img src="png/eg.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_eg.png" width="128px"height="96px"&gt;  
+&lt;img src="png/eh.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_eh.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/er.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_er.png" width="128px"height="96px"&gt;   
+&lt;img src="png/es.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_es.png" width="128px"height="96px"&gt;  
+&lt;img src="png/es-ct.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_es-ct.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/et.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_et.png" width="128px"height="96px"&gt;   
+&lt;img src="png/eu.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_eu.png" width="128px"height="96px"&gt;  
+&lt;img src="png/fi.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_fi.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/mh.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_mh.png" width="128px"height="96px"&gt;   
+&lt;img src="png/fk.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_fk.png" width="128px"height="96px"&gt;  
+&lt;img src="png/fm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_fm.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/fo.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_fo.png" width="128px"height="96px"&gt;   
+&lt;img src="png/fr.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_fr.png" width="128px"height="96px"&gt;  
+&lt;img src="png/ga.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ga.png" width="128px"height="96px"&gt;  
+] 
+
+---
+class: split-five,middle, inverse  
+layout: false 
+# - 
+
+.column[
+&lt;img src="png/gb.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gb.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gb-eng.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gb-eng.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gb-sct.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gb-sct.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/gb-wls.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gb-wls.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gd.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gd.png" width="128px"height="96px"&gt;  
+&lt;img src="png/ge.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ge.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/gf.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gf.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gg.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gg.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gh.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gh.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/gi.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gi.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gl.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gl.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gm.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/gn.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gn.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gp.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gp.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gq.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gq.png" width="128px"height="96px"&gt;  
+] 
+
+---
+class: split-five,middle, inverse  
+layout: false
+# -
+
+.column[
+&lt;img src="png/gr.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gr.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gs.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gs.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gt.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gt.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/gu.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gu.png" width="128px"height="96px"&gt;   
+&lt;img src="png/gw.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gw.png" width="128px"height="96px"&gt;  
+&lt;img src="png/gy.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_gy.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/hk.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_hk.png" width="128px"height="96px"&gt;   
+&lt;img src="png/hm.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_hm.png" width="128px"height="96px"&gt;  
+&lt;img src="png/hn.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_hn.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/tv.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_tv.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ht.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ht.png" width="128px"height="96px"&gt;  
+&lt;img src="png/hu.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_hu.png" width="128px"height="96px"&gt;  
+] 
+
+.column[
+&lt;img src="png/ki.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ki.png" width="128px"height="96px"&gt;   
+&lt;img src="png/ie.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_ie.png" width="128px"height="96px"&gt;  
+&lt;img src="png/il.png" width="128px" height="96px"&gt;
+&lt;img src="palette/palette_il.png" width="128px"height="96px"&gt;  
+] 
+
+---
+name: ninja
+class: middle, inverse
+# 5.7 Limitations - those pesky l...
+.pull-left[
+Complex image:  
+&lt;img src="img/female thor.jpg" width="60%" /&gt;
+]
+
+.pull-right[
+Colour extraction with random sampling:
+&lt;img src="img/Rplot_yellow_good_s_cut.png" width="50%" /&gt;
+
+Colour extraction with K-means/ `paletter`:
+&lt;img src="img/Rplot_yellow_good_k_cut.png" width="50%" /&gt;
+]  
+
+---
+
+layout: true
+
+background-image: url(img/colormind.png)
+background-position: 100% 0%
+background-size: 10%
+
+---
+name: logo-layout
+
+# 5.8 Going forward - neural networks - LSTM, GANs?
+.pull-left[
+
+```r
+col_input &lt;- c("#E66131", NA, "#D08C43", NA, "#FBE114")
+scales::show_col(col_input, borders = NA)
+```
+
+&lt;img src="francois_vanheerden_files/figure-html/input_colourmind -1.png" width="80%" /&gt;
+]
+
+.pull-right[
+
+```r
+col_output &lt;- get_colormind_colors(col_input, "default")
+scales::show_col(col_output, borders = NA)
+```
+
+&lt;img src="francois_vanheerden_files/figure-html/output_colourmind-1.png" width="80%" /&gt;
+]
+
+---
+layout: false
+name: conclusion
+class: middle, inverse
+
+# Conclusion
+
+--
+• There is your code, package code, and the combination of. Often it is best for us to start with a package. 
+
+--
+
+• However, it might fall flat for whatever reason. In this instance, there is a lot that can be learned. It is worth uncovering the functions and seeing what is happening under the hood. Don't be scared to uncover and explore! The demystification has often been empowering.  
+
+--
+
+• The combination of will serve you the best but it requires a willingness to play and explore.  
+
+--
+
+• Good solutions can be complex, but great solutions do not necessarily have to be. 
+
+--
+
+•  A great solution to one problem will rarely be the same solution for another.
+
+---
+class: middle, inverse
+background-size: cover
+background-image: url(img/wallpaper_vib_dark.png)
+
+# Thanks! 
+.pull-left[
+&lt;img src="img/catty1.gif" style="display: block; margin: auto;" /&gt;
+
+##### Find me at:
+• [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt; @_______Francois](https://twitter.com/_______Francois)  
+• [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 512 512"&gt;&lt;path d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"/&gt;&lt;/svg&gt; francois.vanheerden@kantar.com](mailto:francois.vanheerden@kantar.com)   
+]
+
+.pull-right[
+#####This talk was made possible with the help of:  
+• `shinyflags` - [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; shinyflags](https://github.com/Tutuchan/shinyflags) by Pierre Formont  
+
+• `flipbookr` -  [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; flipbookr](https://github.com/EvaMaeRey/flipbookr) by Gina Reynolds 
+
+• `xaringan` -  [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; xaringan](https://github.com/yihui/xaringan) by Yihui Xie 
+
+&lt;img src="img/xaringan.png" alt="Sharingan" width="90" /&gt;  
+
+#####And inspiration from:  
+• Alison Hill - [&lt;svg style="height:0.8em;top:.04em;position:relative;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; @apreshill](http://github.com/apreshill)
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "<div class=\"progress-bar-container\">   <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">   </div> </div> "
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
